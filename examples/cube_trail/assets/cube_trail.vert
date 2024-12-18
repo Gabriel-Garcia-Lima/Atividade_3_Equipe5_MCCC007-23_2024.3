@@ -1,16 +1,16 @@
 #version 300 es
 
-precision mediump float;
-
-
 layout(location = 0) in vec3 inPosition;
+layout(location = 1) in vec2 inTexCoord;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 
-out vec3 fragV;
+out vec2 fragTexCoord;
 
 void main() {
-  gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(inPosition, 1.0);
+  vec4 posEyeSpace = viewMatrix * modelMatrix * vec4(inPosition, 1);
+  gl_Position = projMatrix * posEyeSpace;
+  fragTexCoord = inTexCoord;
 }

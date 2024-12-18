@@ -28,6 +28,10 @@ private:
   GLuint m_EBO{};
   GLuint m_EBOEdges{};
 
+  // Add texture-related members
+  GLuint m_diffuseTexture{};
+  GLint m_diffuseTexLoc{};
+
   glm::mat4 m_animationMatrix{1.0f};
   glm::mat4 m_viewMatrix;
   glm::mat4 m_positionMatrix{1.0f};
@@ -42,6 +46,8 @@ private:
   std::vector<GLuint> m_edgeIndices;
 
   void createBuffers();
+  // Add texture loading function
+  void loadDiffuseTexture(std::string_view path);
 
   enum class Orientation { DOWN, RIGHT, UP, LEFT };
   enum class State { STANDING, LAYING_X, LAYING_Z };

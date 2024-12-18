@@ -26,6 +26,7 @@ public:
   bool hasLost(Level const &level) const;
 
   int getMoveCount() const { return m_moveCount; }
+  void loadTexture(std::string const &path);
 
 private:
   glm::vec3 m_position;
@@ -40,6 +41,7 @@ private:
   GLuint m_VAO{};
   GLuint m_VBO{};
   GLuint m_EBO{};
+  GLuint m_texture{};
 
   // Número de índices para desenhar o bloco
   GLsizei m_indicesCount{};

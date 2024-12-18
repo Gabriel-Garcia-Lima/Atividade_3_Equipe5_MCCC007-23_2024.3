@@ -2,8 +2,8 @@
 
 #include "playerblock.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <cmath>
+#include <glm/gtc/matrix_transform.hpp>
 
 void PlayerBlock::initialize(GLuint program, glm::ivec2 const &startPosition) {
   // Inicializa a posição e a orientação do bloco
@@ -24,45 +24,213 @@ void PlayerBlock::initialize(GLuint program, glm::ivec2 const &startPosition) {
   std::vector<float> vertices = {
       // Posições          // Normais           // Coordenadas de textura
       // Frente
-      -halfWidth, -halfHeight, halfDepth,   0.0f,  0.0f,  1.0f,   0.0f, 0.0f,
-       halfWidth, -halfHeight, halfDepth,   0.0f,  0.0f,  1.0f,   1.0f, 0.0f,
-       halfWidth,  halfHeight, halfDepth,   0.0f,  0.0f,  1.0f,   1.0f, 1.0f,
-      -halfWidth,  halfHeight, halfDepth,   0.0f,  0.0f,  1.0f,   0.0f, 1.0f,
+      -halfWidth,
+      -halfHeight,
+      halfDepth,
+      0.0f,
+      0.0f,
+      1.0f,
+      0.0f,
+      0.0f,
+      halfWidth,
+      -halfHeight,
+      halfDepth,
+      0.0f,
+      0.0f,
+      1.0f,
+      1.0f,
+      0.0f,
+      halfWidth,
+      halfHeight,
+      halfDepth,
+      0.0f,
+      0.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      -halfWidth,
+      halfHeight,
+      halfDepth,
+      0.0f,
+      0.0f,
+      1.0f,
+      0.0f,
+      1.0f,
       // Traseira
-      -halfWidth, -halfHeight, -halfDepth,  0.0f,  0.0f, -1.0f,   1.0f, 0.0f,
-       halfWidth, -halfHeight, -halfDepth,  0.0f,  0.0f, -1.0f,   0.0f, 0.0f,
-       halfWidth,  halfHeight, -halfDepth,  0.0f,  0.0f, -1.0f,   0.0f, 1.0f,
-      -halfWidth,  halfHeight, -halfDepth,  0.0f,  0.0f, -1.0f,   1.0f, 1.0f,
+      -halfWidth,
+      -halfHeight,
+      -halfDepth,
+      0.0f,
+      0.0f,
+      -1.0f,
+      1.0f,
+      0.0f,
+      halfWidth,
+      -halfHeight,
+      -halfDepth,
+      0.0f,
+      0.0f,
+      -1.0f,
+      0.0f,
+      0.0f,
+      halfWidth,
+      halfHeight,
+      -halfDepth,
+      0.0f,
+      0.0f,
+      -1.0f,
+      0.0f,
+      1.0f,
+      -halfWidth,
+      halfHeight,
+      -halfDepth,
+      0.0f,
+      0.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
       // Esquerda
-      -halfWidth, -halfHeight, -halfDepth, -1.0f,  0.0f,  0.0f,   0.0f, 0.0f,
-      -halfWidth, -halfHeight,  halfDepth, -1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
-      -halfWidth,  halfHeight,  halfDepth, -1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
-      -halfWidth,  halfHeight, -halfDepth, -1.0f,  0.0f,  0.0f,   0.0f, 1.0f,
+      -halfWidth,
+      -halfHeight,
+      -halfDepth,
+      -1.0f,
+      0.0f,
+      0.0f,
+      0.0f,
+      0.0f,
+      -halfWidth,
+      -halfHeight,
+      halfDepth,
+      -1.0f,
+      0.0f,
+      0.0f,
+      1.0f,
+      0.0f,
+      -halfWidth,
+      halfHeight,
+      halfDepth,
+      -1.0f,
+      0.0f,
+      0.0f,
+      1.0f,
+      1.0f,
+      -halfWidth,
+      halfHeight,
+      -halfDepth,
+      -1.0f,
+      0.0f,
+      0.0f,
+      0.0f,
+      1.0f,
       // Direita
-       halfWidth, -halfHeight, -halfDepth,  1.0f,  0.0f,  0.0f,   1.0f, 0.0f,
-       halfWidth, -halfHeight,  halfDepth,  1.0f,  0.0f,  0.0f,   0.0f, 0.0f,
-       halfWidth,  halfHeight,  halfDepth,  1.0f,  0.0f,  0.0f,   0.0f, 1.0f,
-       halfWidth,  halfHeight, -halfDepth,  1.0f,  0.0f,  0.0f,   1.0f, 1.0f,
+      halfWidth,
+      -halfHeight,
+      -halfDepth,
+      1.0f,
+      0.0f,
+      0.0f,
+      1.0f,
+      0.0f,
+      halfWidth,
+      -halfHeight,
+      halfDepth,
+      1.0f,
+      0.0f,
+      0.0f,
+      0.0f,
+      0.0f,
+      halfWidth,
+      halfHeight,
+      halfDepth,
+      1.0f,
+      0.0f,
+      0.0f,
+      0.0f,
+      1.0f,
+      halfWidth,
+      halfHeight,
+      -halfDepth,
+      1.0f,
+      0.0f,
+      0.0f,
+      1.0f,
+      1.0f,
       // Topo
-      -halfWidth,  halfHeight,  halfDepth,  0.0f,  1.0f,  0.0f,   0.0f, 0.0f,
-       halfWidth,  halfHeight,  halfDepth,  0.0f,  1.0f,  0.0f,   1.0f, 0.0f,
-       halfWidth,  halfHeight, -halfDepth,  0.0f,  1.0f,  0.0f,   1.0f, 1.0f,
-      -halfWidth,  halfHeight, -halfDepth,  0.0f,  1.0f,  0.0f,   0.0f, 1.0f,
+      -halfWidth,
+      halfHeight,
+      halfDepth,
+      0.0f,
+      1.0f,
+      0.0f,
+      0.0f,
+      0.0f,
+      halfWidth,
+      halfHeight,
+      halfDepth,
+      0.0f,
+      1.0f,
+      0.0f,
+      1.0f,
+      0.0f,
+      halfWidth,
+      halfHeight,
+      -halfDepth,
+      0.0f,
+      1.0f,
+      0.0f,
+      1.0f,
+      1.0f,
+      -halfWidth,
+      halfHeight,
+      -halfDepth,
+      0.0f,
+      1.0f,
+      0.0f,
+      0.0f,
+      1.0f,
       // Base
-      -halfWidth, -halfHeight,  halfDepth,  0.0f, -1.0f,  0.0f,   1.0f, 0.0f,
-       halfWidth, -halfHeight,  halfDepth,  0.0f, -1.0f,  0.0f,   0.0f, 0.0f,
-       halfWidth, -halfHeight, -halfDepth,  0.0f, -1.0f,  0.0f,   0.0f, 1.0f,
-      -halfWidth, -halfHeight, -halfDepth,  0.0f, -1.0f,  0.0f,   1.0f, 1.0f,
+      -halfWidth,
+      -halfHeight,
+      halfDepth,
+      0.0f,
+      -1.0f,
+      0.0f,
+      1.0f,
+      0.0f,
+      halfWidth,
+      -halfHeight,
+      halfDepth,
+      0.0f,
+      -1.0f,
+      0.0f,
+      0.0f,
+      0.0f,
+      halfWidth,
+      -halfHeight,
+      -halfDepth,
+      0.0f,
+      -1.0f,
+      0.0f,
+      0.0f,
+      1.0f,
+      -halfWidth,
+      -halfHeight,
+      -halfDepth,
+      0.0f,
+      -1.0f,
+      0.0f,
+      1.0f,
+      1.0f,
   };
 
   // Índices do bloco
   std::vector<GLuint> indices = {
-      0, 1, 2, 2, 3, 0,         // Frente
-      4, 5, 6, 6, 7, 4,         // Traseira
-      8, 9, 10, 10, 11, 8,      // Esquerda
-      12, 13, 14, 14, 15, 12,   // Direita
-      16, 17, 18, 18, 19, 16,   // Topo
-      20, 21, 22, 22, 23, 20    // Base
+      0,  1,  2,  2,  3,  0,  // Frente
+      4,  5,  6,  6,  7,  4,  // Traseira
+      8,  9,  10, 10, 11, 8,  // Esquerda
+      12, 13, 14, 14, 15, 12, // Direita
+      16, 17, 18, 18, 19, 16, // Topo
+      20, 21, 22, 22, 23, 20  // Base
   };
 
   // Configurar VAO, VBO e EBO
@@ -71,11 +239,13 @@ void PlayerBlock::initialize(GLuint program, glm::ivec2 const &startPosition) {
 
   glGenBuffers(1, &m_VBO);
   glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float),
+               vertices.data(), GL_STATIC_DRAW);
 
   glGenBuffers(1, &m_EBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
+               indices.data(), GL_STATIC_DRAW);
 
   // Atributos de vértice (posição, normal, coordenadas de textura)
   GLint positionAttribute = 0;
@@ -84,15 +254,18 @@ void PlayerBlock::initialize(GLuint program, glm::ivec2 const &startPosition) {
 
   // Posições
   glEnableVertexAttribArray(positionAttribute);
-  glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+  glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE,
+                        8 * sizeof(float), (void *)0);
 
   // Normais
   glEnableVertexAttribArray(normalAttribute);
-  glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+  glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE,
+                        8 * sizeof(float), (void *)(3 * sizeof(float)));
 
   // Coordenadas de textura
   glEnableVertexAttribArray(texCoordAttribute);
-  glVertexAttribPointer(texCoordAttribute, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+  glVertexAttribPointer(texCoordAttribute, 2, GL_FLOAT, GL_FALSE,
+                        8 * sizeof(float), (void *)(6 * sizeof(float)));
 
   glBindVertexArray(0);
 
@@ -125,25 +298,26 @@ void PlayerBlock::update(float deltaTime, Level const &level) {
     glm::vec3 rotationAxis(0.0f);
     float rotationAngle = glm::radians(90.0f);
 
-    glm::ivec2 gridPos(static_cast<int>(m_position.x), static_cast<int>(m_position.z));
+    glm::ivec2 gridPos(static_cast<int>(m_position.x),
+                       static_cast<int>(m_position.z));
 
     switch (dir) {
-      case Direction::Up:
-        deltaPos.z -= 1.0f;
-        rotationAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-        break;
-      case Direction::Down:
-        deltaPos.z += 1.0f;
-        rotationAxis = glm::vec3(-1.0f, 0.0f, 0.0f);
-        break;
-      case Direction::Left:
-        deltaPos.x -= 1.0f;
-        rotationAxis = glm::vec3(0.0f, 0.0f, -1.0f);
-        break;
-      case Direction::Right:
-        deltaPos.x += 1.0f;
-        rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f);
-        break;
+    case Direction::Up:
+      deltaPos.z -= 1.0f;
+      rotationAxis = glm::vec3(1.0f, 0.0f, 0.0f);
+      break;
+    case Direction::Down:
+      deltaPos.z += 1.0f;
+      rotationAxis = glm::vec3(-1.0f, 0.0f, 0.0f);
+      break;
+    case Direction::Left:
+      deltaPos.x -= 1.0f;
+      rotationAxis = glm::vec3(0.0f, 0.0f, -1.0f);
+      break;
+    case Direction::Right:
+      deltaPos.x += 1.0f;
+      rotationAxis = glm::vec3(0.0f, 0.0f, 1.0f);
+      break;
     }
 
     // Calcula a nova posição e orientação com base no estado atual
@@ -152,10 +326,14 @@ void PlayerBlock::update(float deltaTime, Level const &level) {
 
     // Atualiza a orientação
     if (m_orientation == Orientation::Standing) {
-      newOrientation = (dir == Direction::Up || dir == Direction::Down) ? Orientation::LyingZ : Orientation::LyingX;
-    } else if (m_orientation == Orientation::LyingX && (dir == Direction::Left || dir == Direction::Right)) {
+      newOrientation = (dir == Direction::Up || dir == Direction::Down)
+                           ? Orientation::LyingZ
+                           : Orientation::LyingX;
+    } else if (m_orientation == Orientation::LyingX &&
+               (dir == Direction::Left || dir == Direction::Right)) {
       newOrientation = Orientation::Standing;
-    } else if (m_orientation == Orientation::LyingZ && (dir == Direction::Up || dir == Direction::Down)) {
+    } else if (m_orientation == Orientation::LyingZ &&
+               (dir == Direction::Up || dir == Direction::Down)) {
       newOrientation = Orientation::Standing;
     } else {
       // Continua deitado, desloca mais uma unidade
@@ -176,7 +354,8 @@ void PlayerBlock::update(float deltaTime, Level const &level) {
     }
 
     // Verifica se as posições estão em tiles válidos
-    if (level.getTileType(pos1.x, pos1.y) == 0 || level.getTileType(pos2.x, pos2.y) == 0) {
+    if (level.getTileType(pos1.x, pos1.y) == 0 ||
+        level.getTileType(pos2.x, pos2.y) == 0) {
       // Movimento inválido
       return;
     }
@@ -201,7 +380,8 @@ void PlayerBlock::render(GLuint program) const {
   // Calcula a matriz modelo
   glm::mat4 modelMatrix = glm::mat4(1.0f);
 
-  modelMatrix = glm::translate(modelMatrix, m_position - glm::vec3(0.0f, 0.5f, 0.0f));
+  modelMatrix =
+      glm::translate(modelMatrix, m_position - glm::vec3(0.0f, 0.5f, 0.0f));
 
   if (m_isMoving) {
     float t = m_animationTime / m_animationDuration;
@@ -223,31 +403,51 @@ void PlayerBlock::render(GLuint program) const {
   glDrawElements(GL_TRIANGLES, m_indicesCount, GL_UNSIGNED_INT, nullptr);
 
   glBindVertexArray(0);
+  // Activate texture
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, m_texture);
+
+  // Set texture uniform
+  GLint textureLoc = glGetUniformLocation(program, "diffuseTexture");
+  glUniform1i(textureLoc, 0); // Use texture unit 0
+
+  // Set use texture flag in shader
+  GLint useTextureLoc = glGetUniformLocation(program, "useTexture");
+  glUniform1i(useTextureLoc, 1); // 1 means use texture
+
+  glDrawElements(GL_TRIANGLES, m_indicesCount, GL_UNSIGNED_INT, nullptr);
+
+  // Cleanup
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindVertexArray(0);
 }
 
 void PlayerBlock::destroy() {
+  if (m_texture)
+    glDeleteTextures(1, &m_texture);
   glDeleteBuffers(1, &m_VBO);
   glDeleteBuffers(1, &m_EBO);
   glDeleteVertexArrays(1, &m_VAO);
 }
 
-void PlayerBlock::queueMove(Direction dir) {
-  m_moveQueue.push(dir);
-}
+void PlayerBlock::queueMove(Direction dir) { m_moveQueue.push(dir); }
 
 void PlayerBlock::reset(glm::ivec2 const &startPosition) {
   m_position = glm::vec3(startPosition.x + 0.5f, 0.5f, startPosition.y + 0.5f);
   m_orientation = Orientation::Standing;
   m_moveCount = 0;
-  while (!m_moveQueue.empty()) m_moveQueue.pop();
+  while (!m_moveQueue.empty())
+    m_moveQueue.pop();
   m_isMoving = false;
 }
 
 bool PlayerBlock::hasWon(Level const &level) const {
   // Verifica se o bloco está na posição de vitória e na orientação correta
   // Para simplificar, vamos supor que o tile com valor 3 é o objetivo
-  glm::ivec2 pos(static_cast<int>(m_position.x), static_cast<int>(m_position.z));
-  if (level.getTileType(pos.x, pos.y) == 3 && m_orientation == Orientation::Standing && !m_isMoving) {
+  glm::ivec2 pos(static_cast<int>(m_position.x),
+                 static_cast<int>(m_position.z));
+  if (level.getTileType(pos.x, pos.y) == 3 &&
+      m_orientation == Orientation::Standing && !m_isMoving) {
     return true;
   }
   return false;
@@ -267,8 +467,36 @@ bool PlayerBlock::hasLost(Level const &level) const {
     pos2 = glm::ivec2(m_position.x, m_position.z + 0.5f);
   }
 
-  if (level.getTileType(pos1.x, pos1.y) == 0 || level.getTileType(pos2.x, pos2.y) == 0) {
+  if (level.getTileType(pos1.x, pos1.y) == 0 ||
+      level.getTileType(pos2.x, pos2.y) == 0) {
     return true;
   }
   return false;
+}
+
+void PlayerBlock::loadTexture(std::string const &path) {
+  // Load texture file
+  abcg::Image image;
+  if (!image.loadFromFile(path)) {
+    throw abcg::Exception{
+        abcg::Exception::Runtime("Failed to load texture file")};
+  }
+
+  // Create texture
+  glGenTextures(1, &m_texture);
+  glBindTexture(GL_TEXTURE_2D, m_texture);
+
+  // Set texture parameters
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  // Upload texture data
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(),
+               0, GL_RGBA, GL_UNSIGNED_BYTE, image.data());
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
 }

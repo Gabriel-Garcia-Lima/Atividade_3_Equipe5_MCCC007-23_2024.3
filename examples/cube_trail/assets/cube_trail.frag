@@ -2,18 +2,14 @@
 
 precision mediump float;
 
-uniform vec4 color;
-uniform mat4 viewMatrix;
-uniform samplerCube cubeTex;
+in vec2 fragTexCoord;
 
-in vec3 fragV;
+uniform vec4 color;
+uniform sampler2D diffuseTex;
+
 out vec4 outColor;
 
 void main() {
-  if (gl_FrontFacing) {
-    outColor = color;
-  } else {
-    float i = (color.r + color.g + color.b) / 3.0;
-    outColor = vec4(i, 0, 0, 1.0);
-  }
+  vec4 texColor = texture(diffuseTex, fragTexCoord);
+  outColor = texColor * color;
 }

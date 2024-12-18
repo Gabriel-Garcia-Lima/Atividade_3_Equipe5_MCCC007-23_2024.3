@@ -15,7 +15,12 @@ void Window::onCreate() {
 
   // Inicializa o estado do jogo
   m_level.loadFromFile(getAssetsPath() + "levels/level1.txt");
+
+  // Initialize block with texture
   m_playerBlock.initialize(m_program, m_level.getStartPosition());
+  m_playerBlock.loadTexture(getAssetsPath() +
+                            "textures/block.png"); // Add your texture file
+
   m_camera.initialize();
 
   // Configura o tempo
@@ -23,7 +28,8 @@ void Window::onCreate() {
 }
 
 void Window::onUpdate() {
-  if (m_paused) return;
+  if (m_paused)
+    return;
 
   // Calcula o deltaTime
   float currentTime = static_cast<float>(SDL_GetTicks()) / 1000.0f;
@@ -57,7 +63,8 @@ void Window::onPaint() {
 
   // Configura as matrizes de projeção e visualização
   glm::mat4 viewMatrix = m_camera.getViewMatrix();
-  glm::mat4 projectionMatrix = m_camera.getProjectionMatrix(m_viewportWidth, m_viewportHeight);
+  glm::mat4 projectionMatrix =
+      m_camera.getProjectionMatrix(m_viewportWidth, m_viewportHeight);
 
   GLint viewMatrixLoc = glGetUniformLocation(m_program, "viewMatrix");
   GLint projMatrixLoc = glGetUniformLocation(m_program, "projectionMatrix");
@@ -112,30 +119,30 @@ void Window::onEvent(SDL_Event const &event) {
   // Lida com eventos de entrada do usuário
   if (event.type == SDL_KEYDOWN) {
     switch (event.key.keysym.sym) {
-      case SDLK_w:
-      case SDLK_UP:
-        m_playerBlock.queueMove(Direction::Up);
-        break;
-      case SDLK_s:
-      case SDLK_DOWN:
-        m_playerBlock.queueMove(Direction::Down);
-        break;
-      case SDLK_a:
-      case SDLK_LEFT:
-        m_playerBlock.queueMove(Direction::Left);
-        break;
-      case SDLK_d:
-      case SDLK_RIGHT:
-        m_playerBlock.queueMove(Direction::Right);
-        break;
-      case SDLK_SPACE:
-        m_paused = !m_paused;
-        break;
-      case SDLK_ESCAPE:
-        // Implementar funcionalidade de pausa ou saída
-        break;
-      default:
-        break;
+    case SDLK_w:
+    case SDLK_UP:
+      m_playerBlock.queueMove(Direction::Up);
+      break;
+    case SDLK_s:
+    case SDLK_DOWN:
+      m_playerBlock.queueMove(Direction::Down);
+      break;
+    case SDLK_a:
+    case SDLK_LEFT:
+      m_playerBlock.queueMove(Direction::Left);
+      break;
+    case SDLK_d:
+    case SDLK_RIGHT:
+      m_playerBlock.queueMove(Direction::Right);
+      break;
+    case SDLK_SPACE:
+      m_paused = !m_paused;
+      break;
+    case SDLK_ESCAPE:
+      // Implementar funcionalidade de pausa ou saída
+      break;
+    default:
+      break;
     }
   }
 }

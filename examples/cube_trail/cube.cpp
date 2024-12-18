@@ -82,29 +82,37 @@ void Cube::loadObj(std::string_view path) {
   m_vertices.clear();
   m_indices.clear();
 
-  // Um mapa key:value com key=Vertex e value=index
+  // A map for Vertex and index
   std::unordered_map<Vertex, GLuint> hash{};
 
-  // Loop sobre shapes
+  // Loop over shapes
   for (auto const &shape : shapes) {
-    // Loop sobre indices
+    // Loop over faces(polygon)
     for (auto const offset : iter::range(shape.mesh.indices.size())) {
-      // Acesso ao vertex
+      // Access to vertex
       auto const index{shape.mesh.indices.at(offset)};
 
-      // Posição do vértice
+      // Vertex position
       auto const startIndex{3 * index.vertex_index};
       glm::vec3 position{attrib.vertices.at(startIndex + 0),
                          attrib.vertices.at(startIndex + 1),
                          attrib.vertices.at(startIndex + 2)};
 
-      Vertex const vertex{.position = position};
+      // Texture coordinates
+      glm::vec2 texCoord{};
+      if (index.texcoord_index >= 0) {
+        auto const startTexCoordIndex{2 * index.texcoord_index};
+        texCoord = glm::vec2{attrib.texcoords.at(startTexCoordIndex + 0),
+                             attrib.texcoords.at(startTexCoordIndex + 1)};
+      }
 
-      // Se hash não contém este vértice
+      Vertex const vertex{.position = position, .texCoord = texCoord};
+
+      // If hash doesn't contain this vertex
       if (!hash.contains(vertex)) {
-        // Adiciona este índice (tamanho de m_vertices)
+        // Add this index (size of m_vertices)
         hash[vertex] = m_vertices.size();
-        // Adiciona este vértice
+        // Add this vertex
         m_vertices.push_back(vertex);
       }
 
@@ -113,6 +121,17 @@ void Cube::loadObj(std::string_view path) {
   }
 
   createBuffers();
+}
+
+// In cube.cpp, update the loadDiffuseTexture function:
+void Cube::loadDiffuseTexture(std::string_view path) {
+  abcg::glDeleteTextures(1, &m_diffuseTexture);
+
+  abcg::OpenGLTextureCreateInfo textureCreateInfo;
+  textureCreateInfo.path = path;
+  textureCreateInfo.generateMipmaps = true;
+
+  m_diffuseTexture = abcg::loadOpenGLTexture(textureCreateInfo);
 }
 
 void Cube::paint() {
@@ -137,15 +156,20 @@ void Cube::paint() {
 
   abcg::glBindVertexArray(m_VAO);
 
-  // Filled render
-  abcg::glUniform4f(m_colorLoc, 0.36f, 0.26f, 0.56f, 0.8f); // Cor
+  // Activate texture unit 0
+  abcg::glActiveTexture(GL_TEXTURE0);
+  abcg::glBindTexture(GL_TEXTURE_2D, m_diffuseTexture);
+  abcg::glUniform1i(m_diffuseTexLoc, 0);
+
+  // Draw filled cube with texture
+  abcg::glUniform4f(m_colorLoc, 1.0f, 1.0f, 1.0f,
+                    1.0f); // Use white to not tint texture
   abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
   abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
                        nullptr);
 
-  // Wireframe render
-  abcg::glUniform4f(m_colorLoc, 0.0f, 0.0f, 0.0f,
-                    1.0f); // Cor das arestas (preto)
+  // Draw wireframe
+  abcg::glUniform4f(m_colorLoc, 0.0f, 0.0f, 0.0f, 1.0f);
   abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_wireframeEBO);
   abcg::glDrawElements(GL_LINES, m_indices.size() * 2, GL_UNSIGNED_INT,
                        nullptr);
@@ -166,13 +190,32 @@ void Cube::create(GLuint program, GLint modelMatrixLoc, GLint colorLoc,
   abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
   abcg::glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
-  // Vincula os atributos de vértice
+  // Get location of texture uniform
+  m_diffuseTexLoc = abcg::glGetUniformLocation(program, "diffuseTex");
+
+  // Load texture
+  auto const assetsPath{abcg::Application::getAssetsPath()};
+  loadDiffuseTexture(assetsPath +
+                     "cube_texture.png"); // You'll need to create this texture
+
+  // Bind vertex attributes
   auto const positionAttribute{
       abcg::glGetAttribLocation(program, "inPosition")};
+  auto const texCoordAttribute{
+      abcg::glGetAttribLocation(program, "inTexCoord")};
+
+  // Enable attributes
   if (positionAttribute >= 0) {
     abcg::glEnableVertexAttribArray(positionAttribute);
     abcg::glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE,
                                 sizeof(Vertex), nullptr);
+  }
+
+  if (texCoordAttribute >= 0) {
+    abcg::glEnableVertexAttribArray(texCoordAttribute);
+    abcg::glVertexAttribPointer(
+        texCoordAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        reinterpret_cast<void *>(offsetof(Vertex, texCoord)));
   }
 
   // Fim da vinculação
@@ -195,6 +238,7 @@ void Cube::destroy() const {
   abcg::glDeleteBuffers(1, &m_VBO);
   abcg::glDeleteBuffers(1, &m_wireframeEBO);
   abcg::glDeleteVertexArrays(1, &m_VAO);
+  abcg::glDeleteTextures(1, &m_diffuseTexture);
 }
 
 // Novo método para gerar posição aleatória
