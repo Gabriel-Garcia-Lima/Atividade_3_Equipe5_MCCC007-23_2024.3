@@ -20,7 +20,9 @@ public:
   void moveDown();
   void resetGame();
   void setGround(Ground *ground);
+  void paintWireframe();
   bool isOnHole() const;
+  void setTexture(GLuint texture) { m_texture = texture; };
 
 private:
   GLuint m_VAO{};
@@ -35,7 +37,6 @@ private:
   GLint m_modelMatrixLoc;
 
   GLint m_colorLoc;
-  GLuint m_wireframeEBO;
 
   std::vector<Vertex> m_vertices;
   std::vector<GLuint> m_indices;
@@ -77,6 +78,7 @@ private:
   int m_rotationDirection{1};
 
   Ground *m_ground{nullptr};
+  GLuint m_texture{0};
 };
 
 #endif

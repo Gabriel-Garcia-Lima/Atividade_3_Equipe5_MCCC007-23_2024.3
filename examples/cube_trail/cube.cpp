@@ -3,18 +3,19 @@
 #include <cmath>
 #include <iostream>
 
-#include <GL/gl.h> // Standard OpenGL header
-// Or if using GLEW
-#include <GL/glew.h>
+#include <GL/gl.h> // Para constantes como GL_LINE e GL_FILL
 
 #include <glm/gtx/fast_trigonometry.hpp>
 #include <unordered_map>
 
 // Especialização explícita de std::hash para Vertex
+
 template <> struct std::hash<Vertex> {
-  size_t operator()(Vertex const &vertex) const noexcept {
-    auto const h1{std::hash<glm::vec3>()(vertex.position)};
-    return h1;
+  size_t operator()(const Vertex &vertex) const noexcept {
+    auto h1 = std::hash<glm::vec3>()(vertex.position);
+    auto h2 = std::hash<glm::vec3>()(vertex.normal);
+    auto h3 = std::hash<glm::vec2>()(vertex.texCoord);
+    return h1 ^ (h2 << 1) ^ (h3 << 2);
   }
 };
 
@@ -22,7 +23,6 @@ void Cube::createBuffers() {
   // Deleta buffers anteriores
   abcg::glDeleteBuffers(1, &m_EBO);
   abcg::glDeleteBuffers(1, &m_VBO);
-  abcg::glDeleteBuffers(1, &m_wireframeEBO);
 
   // VBO
   abcg::glGenBuffers(1, &m_VBO);
@@ -32,32 +32,12 @@ void Cube::createBuffers() {
                      m_vertices.data(), GL_STATIC_DRAW);
   abcg::glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  // EBO for filled rendering
+  // EBO
   abcg::glGenBuffers(1, &m_EBO);
   abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
   abcg::glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                      sizeof(m_indices.at(0)) * m_indices.size(),
                      m_indices.data(), GL_STATIC_DRAW);
-  abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  // EBO for wireframe rendering
-  abcg::glGenBuffers(1, &m_wireframeEBO);
-  abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_wireframeEBO);
-
-  // Create wireframe indices
-  std::vector<GLuint> wireframeIndices;
-  for (size_t i = 0; i < m_indices.size(); i += 3) {
-    wireframeIndices.push_back(m_indices[i]);
-    wireframeIndices.push_back(m_indices[i + 1]);
-    wireframeIndices.push_back(m_indices[i + 1]);
-    wireframeIndices.push_back(m_indices[i + 2]);
-    wireframeIndices.push_back(m_indices[i + 2]);
-    wireframeIndices.push_back(m_indices[i]);
-  }
-
-  abcg::glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                     sizeof(wireframeIndices.at(0)) * wireframeIndices.size(),
-                     wireframeIndices.data(), GL_STATIC_DRAW);
   abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
@@ -87,18 +67,34 @@ void Cube::loadObj(std::string_view path) {
 
   // Loop sobre shapes
   for (auto const &shape : shapes) {
-    // Loop sobre indices
     for (auto const offset : iter::range(shape.mesh.indices.size())) {
-      // Acesso ao vertex
       auto const index{shape.mesh.indices.at(offset)};
 
-      // Posição do vértice
+      // Posição
       auto const startIndex{3 * index.vertex_index};
       glm::vec3 position{attrib.vertices.at(startIndex + 0),
                          attrib.vertices.at(startIndex + 1),
                          attrib.vertices.at(startIndex + 2)};
 
-      Vertex const vertex{.position = position};
+      // Normal
+      glm::vec3 normal{};
+      if (index.normal_index >= 0) {
+        auto const normalStartIndex{3 * index.normal_index};
+        normal = {attrib.normals.at(normalStartIndex + 0),
+                  attrib.normals.at(normalStartIndex + 1),
+                  attrib.normals.at(normalStartIndex + 2)};
+      }
+
+      // Coordenada de textura
+      glm::vec2 texCoord{};
+      if (index.texcoord_index >= 0) {
+        auto const texStartIndex{2 * index.texcoord_index};
+        texCoord = {attrib.texcoords.at(texStartIndex + 0),
+                    attrib.texcoords.at(texStartIndex + 1)};
+      }
+
+      Vertex const vertex{
+          .position = position, .normal = normal, .texCoord = texCoord};
 
       // Se hash não contém este vértice
       if (!hash.contains(vertex)) {
@@ -113,6 +109,12 @@ void Cube::loadObj(std::string_view path) {
   }
 
   createBuffers();
+}
+
+void Cube::paintWireframe() {
+  glBindVertexArray(m_VAO);
+  glDrawElements(GL_LINES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
+  glBindVertexArray(0);
 }
 
 void Cube::paint() {
@@ -134,21 +136,17 @@ void Cube::paint() {
   m_modelMatrix = glm::scale(m_modelMatrix, scaleVec);
 
   abcg::glUniformMatrix4fv(m_modelMatrixLoc, 1, GL_FALSE, &m_modelMatrix[0][0]);
+  abcg::glUniform4f(m_colorLoc, 0.36f, 0.26f, 0.56f, 0.8f); // Cor
 
   abcg::glBindVertexArray(m_VAO);
-
-  // Filled render
-  abcg::glUniform4f(m_colorLoc, 0.36f, 0.26f, 0.56f, 0.8f); // Cor
-  abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+  abcg::glBindTexture(GL_TEXTURE_2D, m_texture);
   abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
                        nullptr);
 
-  // Wireframe render
+  // Renderizar as bordas no modo wireframe
   abcg::glUniform4f(m_colorLoc, 0.0f, 0.0f, 0.0f,
                     1.0f); // Cor das arestas (preto)
-  abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_wireframeEBO);
-  abcg::glDrawElements(GL_LINES, m_indices.size() * 2, GL_UNSIGNED_INT,
-                       nullptr);
+  paintWireframe();
 
   abcg::glBindVertexArray(0);
 }
@@ -175,6 +173,24 @@ void Cube::create(GLuint program, GLint modelMatrixLoc, GLint colorLoc,
                                 sizeof(Vertex), nullptr);
   }
 
+  // Normal
+  auto const normalAttribute{abcg::glGetAttribLocation(program, "inNormal")};
+  if (normalAttribute >= 0) {
+    abcg::glEnableVertexAttribArray(normalAttribute);
+    abcg::glVertexAttribPointer(
+        normalAttribute, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        reinterpret_cast<void *>(offsetof(Vertex, normal)));
+  }
+
+  // Textura
+  auto const texCoordAttribute{
+      abcg::glGetAttribLocation(program, "inTexCoord")};
+  if (texCoordAttribute >= 0) {
+    abcg::glEnableVertexAttribArray(texCoordAttribute);
+    abcg::glVertexAttribPointer(
+        texCoordAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+        reinterpret_cast<void *>(offsetof(Vertex, texCoord)));
+  }
   // Fim da vinculação
   abcg::glBindBuffer(GL_ARRAY_BUFFER, 0);
   abcg::glBindVertexArray(0);
@@ -193,7 +209,6 @@ void Cube::setGround(Ground *ground) { m_ground = ground; }
 void Cube::destroy() const {
   abcg::glDeleteBuffers(1, &m_EBO);
   abcg::glDeleteBuffers(1, &m_VBO);
-  abcg::glDeleteBuffers(1, &m_wireframeEBO);
   abcg::glDeleteVertexArrays(1, &m_VAO);
 }
 
