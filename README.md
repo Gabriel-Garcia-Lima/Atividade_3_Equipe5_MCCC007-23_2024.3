@@ -169,13 +169,11 @@ O projeto está dividido em três componentes principais, cada um encapsulado em
     glm::vec3 lightDir = glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f));
     abcg::glUniform3fv(lightDirLoc, 1, &lightDir.x);
 
-    lightColor ajusta a intensidade da luz:
-
+    //lightColor ajusta a intensidade da luz
     glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
     abcg::glUniform3fv(lightColorLoc, 1, &lightColor.x);
 
-    ambientColor configura a iluminação ambiente:
-
+    //ambientColor configura a iluminação ambiente
     glm::vec3 ambientColor = glm::vec3(0.6f, 0.6f, 0.6f);
     abcg::glUniform3fv(ambientColorLoc, 1, &ambientColor.x);
     ```
