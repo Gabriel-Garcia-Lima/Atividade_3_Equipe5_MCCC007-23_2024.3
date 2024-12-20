@@ -6,9 +6,9 @@ Para acessar, [clique aqui](./public/cube_trail.html).
 
 ### Integrantes
 
-- Gabriel Garcia de Lima - 11201932522
-- Fernando Hiroaki Suzuki - 11202130281
-- Leonardo Fabiano de Sousa - 11201721317
+- Gabriel Garcia de Lima - R.A.: 11201932522
+- Fernando Hiroaki Suzuki - R.A.: 11202130281
+- Leonardo Fabiano de Sousa - R.A.: 11201721317
 
 ### Introdução
 
